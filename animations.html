@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title></title>
+	<style type="text/css">
+		#block{
+			background: dodgerblue;
+			height: 80px;
+			left: 20;
+			position: absolute;
+			top: 50;
+			width: 80px;
+			-webkit-border-radius: 50%;
+		}
+		button{
+			border: 1px solid #555;
+			-webkit-border-radius: 5px;
+			padding: 4px 10px;
+			background: #555;
+			color: white;
+			font-weight: bold;
+			font-size: 15px;
+			box-shadow: 1px 1px 4px #ddd;
+		}
+		button:hover{
+			background: #666;
+			border-color: #666;
+			cursor: pointer;
+		}
+	</style>
+
+	<script type="text/javascript" src="penner.js"></script>
+	<script type="text/javascript">
+	//Frames per second
+	var fps = 1000/40;
+
+	/**
+	* start: initial value
+	* end: final value
+	* duration: the animation duration
+	* time: the delta time
+	*/
+	function delta(start, end, duration, time, easing){
+		easing = easing || function(a){ return a };
+		return parseInt(start + (end - start) * easing(time / duration));
+	}
+
+	/**
+	* element: the element to animate
+	* property: the elements property to animate
+	* end: final value
+	* duration: the animation duration (ms)
+	*/
+	function animate(element, property, end, duration){
+		var beginning = (new Date()).getTime(), start = parseInt(getStyle(element, property) || 0), interval = setInterval(morph, fps);
+
+		function morph(){
+			var now = (new Date()).getTime(), deltaAttr = end;
+			if(duration > now - beginning){
+				deltaAttr = delta(start, end, duration, now - beginning);
+			}else{
+				clearInterval(interval);
+			}
+			element.style[property] = deltaAttr + 'px';
+		}
+	}
+
+	/**
+	* element: the element to animate
+	* property: the elements property to animate
+	* end: final value
+	* duration: the animation duration (ms)
+	*/
+	function animate2(element, properties, duration, easing){
+		var beginning = (new Date()).getTime(), interval = setInterval(morph, fps);
+		function morph(){
+			var now = (new Date()).getTime(), isEnd = duration <= now - beginning;
+			if(isEnd){
+				clearInterval(interval);
+			}
+			for(prop in properties){
+				var value = properties[prop];
+				if(!(value instanceof Array)){
+					properties[prop] = [parseInt(getStyle(element, prop) || 0), value];
+				} 
+			}
+			for(prop in properties){
+				var value = properties[prop], deltaAttr = value[1], start = value[0];
+
+				if(!isEnd){
+					deltaAttr = delta(start, deltaAttr, duration, now - beginning, easing);
+				}
+				element.style[prop] = deltaAttr + 'px';
+			}
+		}
+	}
+
+	function getStyle(elem, styleProp)
+	{
+		return elem.currentStyle ? elem.currentStyle[styleProp] : window.getComputedStyle(elem,null).getPropertyValue(styleProp);
+	}
+
+	function moveBlock(){
+		animate(document.getElementById("block"), "top", 200, 400);	
+	};
+
+	function moveBlock2(){
+		animate2(document.getElementById("block"), {left: 300}, 400);	
+		animate2(document.getElementById("block"), {top: [20, 200]}, 400);	
+	};
+
+	function moveBlock3(){
+		animate2(document.getElementById("block"), {top: [50, 200], left:[20, 500]}, 400, easeOutBack);	
+	};
+
+	function moveBlock4(){
+		animate2(document.getElementById("block"), {top: [50, 300]}, 600, easeOutBounce);	
+		animate2(document.getElementById("block"), {left:[20, 300]}, 600, easeInOutQuad);	
+	};
+	function moveBlock_2(){
+		basicWrongAnimation(20, 500, document.getElementById("block"), 'left');
+	};
+	function moveBlock_1(){
+		basicElementalAnimation(20, 250, document.getElementById("block"), 'left');
+	};
+	function moveBlock_05(){
+		basicElementalAnimation(20, 900, document.getElementById("block"), 'left');
+	};
+
+	function basicWrongAnimation(a, b, elem, prop){
+		var direction = a < b ? 1 : -1,
+		delta = 2, c = a, temp; //10px per second
+		while(c != b){
+			c = c + delta * direction;
+			if(c<b && a>b || c>b && a<b){
+				c = b;
+			}
+			elem.style[prop] = c + 'px';
+		}
+	}
+
+	function basicElementalAnimation(a, b, elem, prop){
+		var direction = a < b ? 1 : -1,
+		delta = 3, c = a, temp; //10px per second
+		interval = setInterval(function(){
+			if(c != b){
+				c = c + delta * direction;
+				if(c<b && a>b || c>b && a<b){
+					c = b;
+				}
+				elem.style[prop] = c + 'px';
+			}
+			else{
+				clearInterval(interval);
+			}
+		}, 10);
+	}
+
+	</script>
+</head>
+<body>
+	<button id="move" onclick="moveBlock_2();">wrong!</button>
+	<button id="move" onclick="moveBlock_1();">se defiende</button>
+	<button id="move" onclick="moveBlock_05();">ya no se defiende</button>
+	<button id="move" onclick="moveBlock();">base un atributo</button>
+	<button id="move" onclick="moveBlock2();">m&uacute;ltiple atributos</button>
+	<button id="move" onclick="moveBlock3();">easing compartido</button>
+	<button id="move" onclick="moveBlock4();">easing indpendiente</button>
+	<div id="block"></div>
+</body>
+</html>

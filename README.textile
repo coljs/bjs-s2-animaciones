@@ -1,0 +1,7 @@
+h1. Animaciones en JS (bases)
+
+En el pdf y el key está la presentación realizada en el BogotáJS del 14 de Diciembre de 2011 por David Avellaneda (@davsket). En animations.html encontrarán todo el código desarrollado para la exposición del tema.
+
+h2. Animaciones
+
+En el HTML se encuentran todos los ejemplos de las animaciones que se podrían llegar a desarrollar básicamente, desde el wrong! hasta animaciones de múltiples atributos con easing.
